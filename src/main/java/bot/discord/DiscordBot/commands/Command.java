@@ -1,4 +1,4 @@
-package bot.discord.DiscordBot;
+package bot.discord.DiscordBot.commands;
 
 import java.util.List;
 
@@ -14,18 +14,30 @@ public abstract class Command extends ListenerAdapter {
   public abstract List<String> getCommandAliases();
   @Override
   public void onMessageReceived(MessageReceivedEvent e) {
-  	if(e.getAuthor().isBot()) {
-  		return;
-  	}
+    	if(e.getAuthor().isBot()) {
+    		return;
+    	}
+    if(isCommand(e.getMessage())) {
+      exeCommand(e);
+    }
   }
   
-  public void isCommand(Message m) {
+  public boolean isCommand(Message m) {
+    return getCommandAliases().contains(m.getContentDisplay());
   }
   
   public boolean containsCommand(String commandAlias) {
-  	if(getCommandAliases().contains(commandAlias)) {
-  		return true;
-  	}
-  	return false;
+    	if(getCommandAliases().contains(commandAlias)) {
+    		return true;
+    	}
+    	return false;
+  }
+  
+  public String[] getArguments(Message m) {
+    return m.toString().split(" ");
+  }
+  
+  public Message sendMessage(MessageReceivedEvent e, Message message) {
+    return e.getTextChannel().sendMessage(message).complete();
   }
 }
