@@ -18,8 +18,8 @@ public class InfoCommand extends Command {
   @Override
   public List<String> getCommandAliases() {
     List<String> aliases = new ArrayList<String>();
-    aliases.add(";info");
-    aliases.add(";about");
+    aliases.add("info");
+    aliases.add("about");
     return aliases;
   }
 

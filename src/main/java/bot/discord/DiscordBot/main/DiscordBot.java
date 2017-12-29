@@ -1,3 +1,4 @@
+package bot.discord.DiscordBot.main;
 
 
 import javax.security.auth.login.LoginException;
@@ -25,6 +26,7 @@ public class DiscordBot {
       JDABuilder jdaBuilder = new JDABuilder(AccountType.BOT).setToken(TOKEN);
     
       jdaBuilder.addEventListener(new InfoCommand());
+      jdaBuilder.addEventListener(new SearchCommand());
     
       jda = jdaBuilder.buildBlocking();
       System.out.println("all done");

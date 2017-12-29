@@ -1,5 +1,7 @@
 package bot.discord.DiscordBot.commands;
 
+
+import bot.discord.DiscordBot.main.Setup;
 import java.util.List;
 
 import net.dv8tion.jda.core.MessageBuilder;
@@ -14,16 +16,20 @@ public abstract class Command extends ListenerAdapter {
   public abstract List<String> getCommandAliases();
   @Override
   public void onMessageReceived(MessageReceivedEvent e) {
-    	if(e.getAuthor().isBot()) {
-    		return;
-    	}
-    if(isCommand(e.getMessage())) {
-      exeCommand(e);
-    }
+  	if(e.getAuthor().isBot()) {
+  		return;
+  	}
+  	if(e.getMessage().getContentDisplay().charAt(0) != Setup.BOT_PREFIX) {
+  		System.out.println("wrong prefix");
+  		return;
+  	}
+  	if(isCommand(e.getMessage())) {
+  		exeCommand(e);
+  	}
   }
   
   public boolean isCommand(Message m) {
-    return getCommandAliases().contains(m.getContentDisplay());
+    return getCommandAliases().contains(getArguments(m)[0]);
   }
   
   public boolean containsCommand(String commandAlias) {
@@ -34,7 +40,8 @@ public abstract class Command extends ListenerAdapter {
   }
   
   public String[] getArguments(Message m) {
-    return m.toString().split(" ");
+  	String args = m.getContentDisplay().substring(1);
+    return args.split(" ");
   }
   
   public Message sendMessage(MessageReceivedEvent e, Message message) {
