@@ -27,6 +27,7 @@ public class DiscordBot {
     
       jdaBuilder.addEventListener(new InfoCommand());
       jdaBuilder.addEventListener(new SearchCommand());
+      jdaBuilder.addEventListener(new RedditCommand());
     
       jda = jdaBuilder.buildBlocking();
       System.out.println("all done");

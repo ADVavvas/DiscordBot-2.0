@@ -1,11 +1,13 @@
-package bot.discord.DiscordBot.commands;
 
+/**
+ * Inspired buy Yui bot by DV8FromTheWorld
+ */
+
+package bot.discord.DiscordBot.commands;
 
 import bot.discord.DiscordBot.main.Setup;
 import java.util.List;
 
-import net.dv8tion.jda.core.MessageBuilder;
-import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
@@ -20,14 +22,13 @@ public abstract class Command extends ListenerAdapter {
   		return;
   	}
   	if(e.getMessage().getContentDisplay().charAt(0) != Setup.BOT_PREFIX) {
-  		System.out.println("wrong prefix");
   		return;
   	}
   	if(isCommand(e.getMessage())) {
   		exeCommand(e);
   	}
   }
-  
+
   public boolean isCommand(Message m) {
     return getCommandAliases().contains(getArguments(m)[0]);
   }
@@ -47,4 +48,14 @@ public abstract class Command extends ListenerAdapter {
   public Message sendMessage(MessageReceivedEvent e, Message message) {
     return e.getTextChannel().sendMessage(message).complete();
   }
+  
+//  public void deleteMessage(MessageEmbedEvent e, String[] id) {
+//  	for(String i : id) {
+//  		deleteMessage(e,i);
+//  	}
+//  }
+//  public void deleteMessage(MessageEmbedEvent e, String id) {
+//  	e.getTextChannel().deleteMessageById(id).complete();
+//  }
+  
 }
