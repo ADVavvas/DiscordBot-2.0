@@ -9,6 +9,7 @@ import bot.discord.DiscordBot.main.Setup;
 import java.util.List;
 
 import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
@@ -47,6 +48,10 @@ public abstract class Command extends ListenerAdapter {
   
   public Message sendMessage(MessageReceivedEvent e, Message message) {
     return e.getTextChannel().sendMessage(message).complete();
+  }
+  
+  public Message sendMessage(MessageReceivedEvent e, MessageEmbed messageEmbed) {
+  	return e.getTextChannel().sendMessage(messageEmbed).complete();
   }
   
 //  public void deleteMessage(MessageEmbedEvent e, String[] id) {

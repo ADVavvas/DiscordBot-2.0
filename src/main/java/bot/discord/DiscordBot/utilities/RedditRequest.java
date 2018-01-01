@@ -12,7 +12,7 @@ import org.json.JSONObject;
 public class RedditRequest {
 
 	private static final String API_URL = "https://www.reddit.com/api";
-	private static final String SUBREDDIT_URL = "https://www.reddit.com/r/";
+	private static final String SUBREDDIT_URL = "r/";
 	private static final String TRENDING_URL = "/trending_subreddits.json";
 	
 	public RedditRequest() {
@@ -39,7 +39,7 @@ public class RedditRequest {
     String[] toReturn = new String[trendSR.length()];
     for (int i = 0; i < trendSR.length(); i++)
     {
-        toReturn[i] = (SUBREDDIT_URL + trendSR.get(i).toString() + "\n");
+        toReturn[i] = (SUBREDDIT_URL + trendSR.get(i).toString());
     }
     return toReturn;
 	}
