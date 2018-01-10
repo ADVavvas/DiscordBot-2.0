@@ -1,4 +1,4 @@
-package bot.discord.DiscordBot.utilities;
+package obsolete;
 
 import java.io.BufferedReader;
 import java.io.IOException;

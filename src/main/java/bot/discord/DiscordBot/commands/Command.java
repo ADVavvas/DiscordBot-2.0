@@ -8,10 +8,17 @@ package bot.discord.DiscordBot.commands;
 import bot.discord.DiscordBot.main.Setup;
 import java.util.List;
 
+import net.dv8tion.jda.core.entities.Channel;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageEmbed;
+import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
+import net.dv8tion.jda.core.managers.GuildController;
+import net.dv8tion.jda.core.managers.GuildManager;
 
 public abstract class Command extends ListenerAdapter {
 	
@@ -19,15 +26,15 @@ public abstract class Command extends ListenerAdapter {
   public abstract List<String> getCommandAliases();
   @Override
   public void onMessageReceived(MessageReceivedEvent e) {
-  	if(e.getAuthor().isBot()) {
-  		return;
-  	}
-  	if(e.getMessage().getContentDisplay().charAt(0) != Setup.BOT_PREFIX) {
-  		return;
-  	}
-  	if(isCommand(e.getMessage())) {
-  		exeCommand(e);
-  	}
+    	if(e.getAuthor().isBot()) {
+    		return;
+    	}
+    	if(e.getMessage().getContentDisplay().charAt(0) != Setup.BOT_PREFIX) {
+    		return;
+    	}
+    	if(isCommand(e.getMessage())) {
+    		exeCommand(e);
+    	}
   }
 
   public boolean isCommand(Message m) {

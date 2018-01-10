@@ -1,4 +1,4 @@
-package bot.discord.DiscordBot.utilities;
+package obsolete;
 
 import java.awt.Color;
 import java.io.BufferedReader;
