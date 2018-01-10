@@ -14,8 +14,8 @@ public class SetupManager {
   
   public SetupManager() {
     setup = new Setup();
-    setup.setBotToken("MzY2NjQzMzU5MTI2NzgxOTUz.DOvEIw.NquAjO2ABXpmANkhT4uJQJSjvlY");
-    setup.setRedditToken("joELa-s-mj-vRjfZVwFbeWMiuNk");
+    setup.setBotToken("");
+    setup.setRedditToken("");
   }
 
    public Setup getSetup() {
