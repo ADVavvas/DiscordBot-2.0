@@ -23,9 +23,9 @@ public class RedditCommand extends Command {
 		MessageBuilder mb = new MessageBuilder();
 		
 		if(args.length <= 1) {
-			mb.append("This is the reddit command! Hooray!\n");
-			mb.append("To use it type one of the following\n");
-			mb.append("1 - \"" + Setup.BOT_PREFIX + "reddit joke\" - Displays a random joke from /r/Jokes!");
+			mb.append("This is the reddit command! Hooray!\n")
+			  .append("To use it type one of the following\n")
+			  .append("1 - \"" + Setup.BOT_PREFIX + "reddit joke\" - Displays a random joke from /r/Jokes!");
 			sendMessage(e, mb.build());
 			return;
 		}

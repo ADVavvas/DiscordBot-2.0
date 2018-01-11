@@ -1,6 +1,7 @@
 package bot.discord.DiscordBot.commands;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import net.dv8tion.jda.core.MessageBuilder;
@@ -17,10 +18,7 @@ public class InfoCommand extends Command {
 
   @Override
   public List<String> getCommandAliases() {
-    List<String> aliases = new ArrayList<String>();
-    aliases.add("info");
-    aliases.add("about");
-    return aliases;
+    return Arrays.asList("info", "about");
   }
 
 }

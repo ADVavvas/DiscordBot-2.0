@@ -5,6 +5,8 @@ import javax.security.auth.login.LoginException;
 
 import bot.discord.DiscordBot.commands.*;
 import bot.discord.DiscordBot.utilities.Reddit;
+import bot.discord.DiscordBot.utilities.RoleManager;
+import bot.discord.DiscordBot.utilities.TrustManager;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
@@ -25,6 +27,7 @@ public class DiscordBot {
   private static void init() {
     try {
       Setup setup = SetupManager.getInstance().getSetup();
+      TrustManager.getInstance();
       JDABuilder jdaBuilder = new JDABuilder(AccountType.BOT).setToken(setup.getBotToken());
       Reddit.setup(setup.getRedditToken());
       
@@ -32,9 +35,9 @@ public class DiscordBot {
       jdaBuilder.addEventListener(new InfoCommand());
       jdaBuilder.addEventListener(new SearchCommand());
       jdaBuilder.addEventListener(new RedditCommand());
-      
-      
-      
+      jdaBuilder.addEventListener(new RoleCommand());
+      jdaBuilder.addEventListener(new TrustCommand());
+      jdaBuilder.addEventListener(new ClearCommand());
       
     
       jda = jdaBuilder.buildBlocking();

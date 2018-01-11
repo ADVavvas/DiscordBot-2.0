@@ -41,7 +41,9 @@ public class Reddit {
         .addHeader("cache-control", "no-cache")
         .build();
 
+      System.out.print("what" + AUTH_TOKEN);
       Response response = client.newCall(request).execute();
+     
       String jsonString = response.body().string();
       
       JSONArray responseJSONArray = new JSONArray(jsonString);

@@ -29,6 +29,9 @@ public abstract class Command extends ListenerAdapter {
     	if(e.getAuthor().isBot()) {
     		return;
     	}
+    	if(e.getMessage().getContentDisplay().isEmpty()) {
+    	  return;
+    	}
     	if(e.getMessage().getContentDisplay().charAt(0) != Setup.BOT_PREFIX) {
     		return;
     	}
