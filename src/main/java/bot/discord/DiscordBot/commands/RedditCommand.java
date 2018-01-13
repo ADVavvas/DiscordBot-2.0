@@ -1,18 +1,12 @@
 package bot.discord.DiscordBot.commands;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import bot.discord.DiscordBot.main.Setup;
 import bot.discord.DiscordBot.utilities.Reddit;
 import net.dv8tion.jda.core.MessageBuilder;
-import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import obsolete.RedditEmbed;
-import obsolete.RedditRequest;
 
 public class RedditCommand extends Command {
 
@@ -23,10 +17,7 @@ public class RedditCommand extends Command {
 		MessageBuilder mb = new MessageBuilder();
 		
 		if(args.length <= 1) {
-			mb.append("This is the reddit command! Hooray!\n")
-			  .append("To use it type one of the following\n")
-			  .append("1 - \"" + Setup.BOT_PREFIX + "reddit joke\" - Displays a random joke from /r/Jokes!");
-			sendMessage(e, mb.build());
+		  commandHelp(e);
 			return;
 		}
 		switch(args[1]) {
@@ -45,6 +36,15 @@ public class RedditCommand extends Command {
 		
 	}
 	
+	@Override
+	protected void commandHelp(MessageReceivedEvent e) {
+	  MessageBuilder mb = new MessageBuilder();
+    mb.append("This is the reddit command! Hooray!\n")
+      .append("Type one of the following:\n")
+      .append("1 - `" + Setup.BOT_PREFIX + "reddit joke` - Displays a random joke from /r/Jokes!\n")
+      .append("2 - `" + Setup.BOT_PREFIX + "reddit powerlifting` - Displays a random post from /r/powerlifting (retarded command)!\n");
+    sendMessage(e, mb.build());
+	}
 	@Override
 	public List<String> getCommandAliases() {
 		return Arrays.asList("reddit");

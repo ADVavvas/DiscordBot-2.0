@@ -2,9 +2,7 @@ package bot.discord.DiscordBot.commands;
 
 import java.util.Arrays;
 import java.util.List;
-
 import bot.discord.DiscordBot.main.SetupManager;
-import bot.discord.DiscordBot.utilities.TrustManager;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
@@ -34,6 +32,12 @@ public class TrustCommand extends Command {
     sendMessage(e, mb.build());
   }
 
+  @Override
+  protected void commandHelp(MessageReceivedEvent e) {
+    MessageBuilder mb = new MessageBuilder();
+    mb.append("This command is only for server admins");
+    sendMessage(e, mb.build());
+  }
   @Override
   public List<String> getCommandAliases() {
     return Arrays.asList("trust");

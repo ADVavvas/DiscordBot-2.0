@@ -13,6 +13,8 @@ import java.util.List;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import bot.discord.DiscordBot.commands.Command;
+
 public class SetupManager {
   
   private static SetupManager singleton;
@@ -32,6 +34,7 @@ public class SetupManager {
     setup = new Setup();
     setup.setBotToken("");
     setup.setRedditToken("");
+    setup.setCommand(new ArrayList<Command>());
     setup.setTrusted(new ArrayList<String>());
     loadSettings();
   }

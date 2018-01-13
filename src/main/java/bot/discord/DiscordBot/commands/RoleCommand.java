@@ -3,10 +3,8 @@ package bot.discord.DiscordBot.commands;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.jws.soap.SOAPBinding.Use;
-
+import bot.discord.DiscordBot.main.Setup;
 import bot.discord.DiscordBot.main.SetupManager;
-import bot.discord.DiscordBot.utilities.TrustManager;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
@@ -24,39 +22,22 @@ public class RoleCommand extends Command{
     
     String[] arguments = getArguments(e.getMessage());
     
-    if(arguments.length == 1) {
+    if(arguments.length <= 2) {
       commandHelp(e);
-    } else if (arguments.length == 2) {
-      String arg = arguments[1];
-      if(arg.matches("^(\\d?[1-9]|[1-9]0)$")) {
-        int role = Integer.parseInt(arg);
-        if(role > e.getGuild().getRoles().size()){
-          mb.append("Role index out of bounds");
-        } else if(addRole(e, role-1)) {
-          mb.append("Role added successfully!");
-        } else {
-          mb.append("I don't have the permission to do so");
-        }
-        sendMessage(e, mb.build());
-      } else {
-        switch(arg) {
-          case "list":
-            listRoles(e);
-            break;
-          case "remove":
-            if(removeRoles(e)) {
-              mb.append("Roles removed successfully!");
-            } else {
-              mb.append("I don't have the permission to do so");
-            }
-            sendMessage(e, mb.build());
-            break;
-          default:
-            mb.append("What you typed doesn't match a command :frowning2:");
-            sendMessage(e, mb.build());
-            break;
-        }
-      }
+      return;
+    }
+    switch(arguments[1]) {
+      case "add":
+        if(addRole(e, arguments)) sendMessage(e, new MessageBuilder("Role added successfully!").build());
+        else sendMessage(e, new MessageBuilder("Role was not added!").build());
+        break;
+      case "remove":
+        if(removeRole(e, arguments)) sendMessage(e, new MessageBuilder("Role removed successfully!").build());
+        else sendMessage(e, new MessageBuilder("Role was not removed!").build());
+        break;
+      case "list":
+        listRoles(e);
+        break;
     }
     return;
   }
@@ -96,12 +77,13 @@ public class RoleCommand extends Command{
       ex.printStackTrace();
     }
   }
-  private void commandHelp(MessageReceivedEvent e) {
+  @Override
+  protected void commandHelp(MessageReceivedEvent e) {
     MessageBuilder mb = new MessageBuilder();
-    mb.append("Welcome to the role command! Use one of the follwing \n")
-    .append(";role list - Get all roles in the guild\n")
-    .append(";role [i] - Request a role\n")
-    .append(";role remove - Remove all roles except default\n");
+    mb.append("Welcome to the role command!\nType one of the following\n")
+    .append("`" + Setup.BOT_PREFIX + "role list` - Get all roles in the guild\n")
+    .append("`" + Setup.BOT_PREFIX + "role [i]` - Request a role\n")
+    .append("`" + Setup.BOT_PREFIX + "role remove` - Remove all roles except default\n");
     sendMessage(e, mb.build());
   }
   private void listRoles(MessageReceivedEvent e) {
@@ -118,40 +100,150 @@ public class RoleCommand extends Command{
     sendMessage(e, mb.build());
   }
   
-  private boolean removeRoles(MessageReceivedEvent e) {
+  private boolean removeRole(MessageReceivedEvent e, String[] args) {
     Member bot = e.getGuild().getSelfMember();
     Member user = e.getMember();
+    Member reqMem = null;
     
-    if(!bot.hasPermission(Permission.MANAGE_ROLES)) {
+    Role botRole = bot.getRoles().get(0);
+    Role reqRole = null;
+    boolean override = SetupManager.getInstance().getSetup().getTrusted().contains(user.getUser().getId());
+    MessageBuilder mb = new MessageBuilder();
+    
+    //Bot has permission?
+    if(!bot.hasPermission(Permission.MANAGE_ROLES)){
+      sendMessage(e, new MessageBuilder("I don't have the `Manage Role` permission!").build());
       return false;
-    } else if(bot.getRoles().get(0).compareTo(user.getRoles().get(0)) <= 0) {
+    }
+    //User has permission?
+    if(!user.hasPermission(Permission.MANAGE_ROLES) && !override) {
+      sendMessage(e, new MessageBuilder("You don't have the `Manage Role` permission!").build());
       return false;
-    } else {
-      e.getGuild().getController().removeRolesFromMember(user, user.getRoles()).complete();
+    }
+    //Is 3rd argument an integer (1-99)
+    if(!args[2].matches("^(\\d?[1-9]|[1-9]0)$")) {
+      return false;
+    }
+    //Does the role exist in the guild
+    if(Integer.parseInt(args[2]) > e.getGuild().getRoles().size()){
+      sendMessage(e, new MessageBuilder("Role index out of bounds!").build());
+      return false;
+    }
+    reqRole = e.getGuild().getRoles().get(Integer.parseInt(args[2]) - 1);
+    
+    //Does the bot have a sufficient role
+    if(botRole.compareTo(reqRole) <= 0) {
+      sendMessage(e, new MessageBuilder("My role is not high enough!").build());
+      return false;
+    }
+    //Does the user have a sufficient role
+    if(user.getRoles().get(0).compareTo(reqRole) <= 0 && !override) {
+      sendMessage(e, new MessageBuilder("Your role is not high enough").build());
+      return false;
+    }
+    //Own request or for other?
+    if(args.length == 4) {
+       reqMem = e.getGuild().getMemberById(args[3]);
+       //Is 4th argument a user id?
+       if(reqMem == null) {
+         sendMessage(e, new MessageBuilder("Target member ID is invalid or does not exist!").build());
+         return false;
+       }
+       //Does the requester have higher role receiver
+       if(user.getRoles().get(0).compareTo(reqRole) <= 0 && !override) {
+         sendMessage(e, new MessageBuilder("Your role is lower than the target's!").build());
+         return false;
+       }
+       //Does the receiver have the role
+       if(!reqMem.getRoles().contains(reqRole)) {
+         sendMessage(e, new MessageBuilder("Target does not have that role!").build());
+         return false;
+       }
+       e.getGuild().getController().removeSingleRoleFromMember(reqMem, reqRole).complete();
+       return true; 
+    }
+    if(args.length == 3) {
+      if(!user.getRoles().contains(reqRole)) {
+        sendMessage(e, new MessageBuilder("Target does not have that role!").build());
+        return false;
+      }
+      e.getGuild().getController().removeSingleRoleFromMember(user, reqRole).complete();
       return true;
     }
+    
+    return false;
   }
   
-  private boolean addRole(MessageReceivedEvent e, int i) {
+  private boolean addRole(MessageReceivedEvent e, String[] args) {
     Member bot = e.getGuild().getSelfMember();
     Member user = e.getMember();
+    Member reqMem = null;
     
-    if(!bot.hasPermission(Permission.MANAGE_ROLES)) {
+    Role botRole = bot.getRoles().get(0);
+    Role reqRole = null;
+    boolean override = SetupManager.getInstance().getSetup().getTrusted().contains(user.getUser().getId());
+    
+    //Bot has permission?
+    if(!bot.hasPermission(Permission.MANAGE_ROLES)){
+      sendMessage(e, new MessageBuilder("I don't have the `Manage Role` permission!").build());
       return false;
     }
-    if(bot.getRoles().get(0).compareTo(e.getGuild().getRoles().get(i)) < 0) {
+    //User has permission?
+    if(!user.hasPermission(Permission.MANAGE_ROLES) && !override) {
+      sendMessage(e, new MessageBuilder("You don't have the `Manage Role` permission!").build());
       return false;
     }
-    if(SetupManager.getInstance().getSetup().getTrusted().contains(user.getUser().getId())) {
-      e.getGuild().getController().addSingleRoleToMember(user, e.getGuild().getRoles().get(i)).complete();
+    //Is 3rd argument an integer (1-99)
+    if(!args[2].matches("^(\\d?[1-9]|[1-9]0)$")) {
+      return false;
+    }
+    //Does the role exist in the guild
+    if(Integer.parseInt(args[2]) > e.getGuild().getRoles().size()){
+      sendMessage(e, new MessageBuilder("Role index out of bounds!").build());
+      return false;
+    }
+    reqRole = e.getGuild().getRoles().get(Integer.parseInt(args[2]) - 1);
+    
+    //Does the bot have a sufficient role
+    if(botRole.compareTo(reqRole) <= 0) {
+      sendMessage(e, new MessageBuilder("My role is not high enough!").build());
+      return false;
+    }
+    //Does the user have a sufficient role
+    if(user.getRoles().get(0).compareTo(reqRole) <= 0 && !override) {
+      sendMessage(e, new MessageBuilder("Your role is not high enough").build());
+      return false;
+    }
+    //Own request or for other?
+    if(args.length == 4) {
+       reqMem = e.getGuild().getMemberById(args[3]);
+       //Is 4th argument a user id?
+       if(reqMem == null) {
+         sendMessage(e, new MessageBuilder("Target member ID is invalid or does not exist!").build());
+         return false;
+       }
+       //Does the requester have higher role receiver
+       if(user.getRoles().get(0).compareTo(reqRole) <= 0 && !override) {
+         sendMessage(e, new MessageBuilder("Your role is lower than the target's!").build());
+         return false;
+       }
+       //Does the receiver have the role
+       if(reqMem.getRoles().contains(reqRole)) {
+         sendMessage(e, new MessageBuilder("Target already has that role!").build());
+         return false;
+       }
+       e.getGuild().getController().addSingleRoleToMember(reqMem, reqRole).complete();
+       return true; 
+    }
+    if(args.length == 3) {
+      if(user.getRoles().contains(reqRole)) {
+        sendMessage(e, new MessageBuilder("Target already has that role!").build());
+        return false;
+      }
+      e.getGuild().getController().addSingleRoleToMember(user, reqRole).complete();
       return true;
     }
-    if(user.getRoles().size() == 0 || user.getRoles().get(0).compareTo(e.getGuild().getRoles().get(i)) <= 0) {
-      return false;
-    }
-    else {
-      e.getGuild().getController().addSingleRoleToMember(user, e.getGuild().getRoles().get(i)).complete();
-      return true;
-    }
+    
+    return false;
   }
 }

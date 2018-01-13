@@ -8,22 +8,17 @@ package bot.discord.DiscordBot.commands;
 import bot.discord.DiscordBot.main.Setup;
 import java.util.List;
 
-import net.dv8tion.jda.core.entities.Channel;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageEmbed;
-import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
-import net.dv8tion.jda.core.managers.GuildController;
-import net.dv8tion.jda.core.managers.GuildManager;
 
 public abstract class Command extends ListenerAdapter {
 	
   public abstract void exeCommand(MessageReceivedEvent e);
   public abstract List<String> getCommandAliases();
+
   @Override
   public void onMessageReceived(MessageReceivedEvent e) {
     	if(e.getAuthor().isBot()) {
@@ -56,7 +51,7 @@ public abstract class Command extends ListenerAdapter {
     return args.split(" ");
   }
   
-  public Message sendMessage(MessageReceivedEvent e, Message message) {
+  public static Message sendMessage(MessageReceivedEvent e, Message message) {
     return e.getTextChannel().sendMessage(message).complete();
   }
   
@@ -64,13 +59,7 @@ public abstract class Command extends ListenerAdapter {
   	return e.getTextChannel().sendMessage(messageEmbed).complete();
   }
   
-//  public void deleteMessage(MessageEmbedEvent e, String[] id) {
-//  	for(String i : id) {
-//  		deleteMessage(e,i);
-//  	}
-//  }
-//  public void deleteMessage(MessageEmbedEvent e, String id) {
-//  	e.getTextChannel().deleteMessageById(id).complete();
-//  }
-  
+  protected void commandHelp(MessageReceivedEvent e) {
+    sendMessage(e, new MessageBuilder("Command Info").build());
+  }
 }

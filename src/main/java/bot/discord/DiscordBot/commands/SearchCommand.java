@@ -3,6 +3,7 @@ package bot.discord.DiscordBot.commands;
 import java.util.Arrays;
 import java.util.List;
 
+import bot.discord.DiscordBot.main.Setup;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
@@ -11,15 +12,12 @@ public class SearchCommand extends Command {
 	@Override
 	public void exeCommand(MessageReceivedEvent e) {
 		
-		System.out.println("searched");
-		
 		String[] args = getArguments(e.getMessage());
 
 		MessageBuilder mb = new MessageBuilder();
 		
-		if(args.length <= 1) {
-			mb.append("Add some search parameters");
-			sendMessage(e, mb.build());
+		if(args.length == 1) {
+			commandHelp(e);
 			return;
 		}
 		
@@ -38,6 +36,14 @@ public class SearchCommand extends Command {
 	@Override
 	public List<String> getCommandAliases() {
 		return Arrays.asList("google", "search");
+	}
+	
+	@Override
+	protected void commandHelp(MessageReceivedEvent e) {
+	  MessageBuilder mb = new MessageBuilder();
+	  mb.append("Welcome to the search command!\n")
+	    .append("Type `" + Setup.BOT_PREFIX + "search` or `" + Setup.BOT_PREFIX + "google` followed by some keyword to search google!\n");
+    sendMessage(e, mb.build());
 	}
 
 }
