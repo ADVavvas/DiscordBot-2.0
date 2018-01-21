@@ -55,6 +55,10 @@ public abstract class Command extends ListenerAdapter {
     return e.getTextChannel().sendMessage(message).complete();
   }
   
+  public static Message sendMessage(MessageReceivedEvent e, String message) {
+    return e.getTextChannel().sendMessage(message).complete();
+  }
+  
   public Message sendMessage(MessageReceivedEvent e, MessageEmbed messageEmbed) {
   	return e.getTextChannel().sendMessage(messageEmbed).complete();
   }

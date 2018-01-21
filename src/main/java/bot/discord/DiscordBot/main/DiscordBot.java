@@ -4,6 +4,7 @@ package bot.discord.DiscordBot.main;
 import javax.security.auth.login.LoginException;
 
 import bot.discord.DiscordBot.commands.*;
+import bot.discord.DiscordBot.commands.music.*;
 import bot.discord.DiscordBot.utilities.Reddit;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
@@ -44,6 +45,11 @@ public class DiscordBot {
       setup.addCommand(new RollCommand());
       jdaBuilder.addEventListener(new HelpCommand());
       setup.addCommand(new HelpCommand());
+      
+      jdaBuilder.addEventListener(new PlayCommand());
+      setup.addCommand(new PlayCommand());
+      jdaBuilder.addEventListener(new StopCommand());
+      setup.addCommand(new StopCommand());
       
     
       jda = jdaBuilder.buildBlocking();
