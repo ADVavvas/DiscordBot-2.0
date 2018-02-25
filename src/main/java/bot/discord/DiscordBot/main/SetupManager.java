@@ -38,7 +38,6 @@ public class SetupManager {
     loadSettings();
     //gson sets field to null for some reason, set ArrayList after to avoid NullPointerException
     setup.setCommand(new ArrayList<Command>());
-    //why does it not update
   }
 
    public Setup getSetup() {
