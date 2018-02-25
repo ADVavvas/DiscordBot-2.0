@@ -9,7 +9,9 @@ import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
@@ -18,11 +20,13 @@ public class RoleCommand extends Command{
   @Override
   public void exeCommand(MessageReceivedEvent e) {
     
-    MessageBuilder mb = new MessageBuilder();
-    
     String[] arguments = getArguments(e.getMessage());
     
     if(arguments.length <= 2) {
+      if(arguments[1].equals("list")) {
+        listRoles(e);
+        return;
+      }
       commandHelp(e);
       return;
     }
@@ -34,9 +38,6 @@ public class RoleCommand extends Command{
       case "remove":
         if(removeRole(e, arguments)) sendMessage(e, new MessageBuilder("Role removed successfully!").build());
         else sendMessage(e, new MessageBuilder("Role was not removed!").build());
-        break;
-      case "list":
-        listRoles(e);
         break;
     }
     return;
@@ -82,8 +83,8 @@ public class RoleCommand extends Command{
     MessageBuilder mb = new MessageBuilder();
     mb.append("Welcome to the role command!\nType one of the following\n")
     .append("`" + Setup.BOT_PREFIX + "role list` - Get all roles in the guild\n")
-    .append("`" + Setup.BOT_PREFIX + "role [i]` - Request a role\n")
-    .append("`" + Setup.BOT_PREFIX + "role remove` - Remove all roles except default\n");
+    .append("`" + Setup.BOT_PREFIX + "role add <role-number> <memberID/mention>(optional)` - Add a role (admin)\n")
+    .append("`" + Setup.BOT_PREFIX + "role remove <role-number> <memberID/mention>(optional)` - Remove a role (admin)\n");
     sendMessage(e, mb.build());
   }
   private void listRoles(MessageReceivedEvent e) {
@@ -137,13 +138,20 @@ public class RoleCommand extends Command{
       return false;
     }
     //Does the user have a sufficient role
-    if(user.getRoles().get(0).compareTo(reqRole) <= 0 && !override) {
+    if((user.getRoles().isEmpty() || user.getRoles().get(0).compareTo(reqRole) <= 0) && !override) {
       sendMessage(e, new MessageBuilder("Your role is not high enough").build());
       return false;
     }
+    
     //Own request or for other?
-    if(args.length == 4) {
-       reqMem = e.getGuild().getMemberById(args[3]);
+    if(args.length >= 4) {
+       
+       if(args[3].matches("[1-9]*")) {
+         reqMem = e.getGuild().getMemberById(args[3]);
+       } else {
+         reqMem = e.getMessage().getMentionedMembers().get(0);
+       }
+       
        //Is 4th argument a user id?
        if(reqMem == null) {
          sendMessage(e, new MessageBuilder("Target member ID is invalid or does not exist!").build());
@@ -209,14 +217,19 @@ public class RoleCommand extends Command{
       sendMessage(e, new MessageBuilder("My role is not high enough!").build());
       return false;
     }
+    
     //Does the user have a sufficient role
-    if(user.getRoles().get(0).compareTo(reqRole) <= 0 && !override) {
+    if((user.getRoles().isEmpty() || user.getRoles().get(0).compareTo(reqRole) <= 0 )&& !override) {
       sendMessage(e, new MessageBuilder("Your role is not high enough").build());
       return false;
     }
     //Own request or for other?
-    if(args.length == 4) {
-       reqMem = e.getGuild().getMemberById(args[3]);
+    if(args.length >= 4) {
+      if(args[3].matches("[1-9]*")) {
+        reqMem = e.getGuild().getMemberById(args[3]);
+      } else {
+        reqMem = e.getMessage().getMentionedMembers().get(0);
+      }
        //Is 4th argument a user id?
        if(reqMem == null) {
          sendMessage(e, new MessageBuilder("Target member ID is invalid or does not exist!").build());

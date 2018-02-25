@@ -1,15 +1,19 @@
 package bot.discord.DiscordBot.main;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import com.google.gson.annotations.Expose;
 
 import bot.discord.DiscordBot.commands.Command;
 
 public class Setup {
 
 	public static final char BOT_PREFIX = ';';
-	private String botToken;
-	private String redditToken;
-	private List<String> trusted;
+  @Expose private String botToken;
+  @Expose private String redditToken;
+	@Expose private List<String> trusted;
+	@Expose (serialize = false, deserialize = false)
 	private List<Command> commands;
 	
 	

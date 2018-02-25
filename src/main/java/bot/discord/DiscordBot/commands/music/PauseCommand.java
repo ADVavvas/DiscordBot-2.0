@@ -12,7 +12,7 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.managers.AudioManager;
 
-public class StopCommand extends Command {
+public class PauseCommand extends Command {
 
   @Override
   public void exeCommand(MessageReceivedEvent e) {
@@ -22,23 +22,27 @@ public class StopCommand extends Command {
     TrackScheduler scheduler = manager.getTrackScheduler();
     
     AudioManager audioManager = guild.getAudioManager();
-
-    if((!audioManager.isConnected() && audioManager.isAttemptingToConnect()) || (scheduler.getQueue().isEmpty() && player.getPlayingTrack() == null)) {
-      sendMessage(e, "Not playing anything bro!");
-      return;
-    }
-    if(audioManager.isAttemptingToConnect()) {
-      sendMessage(e, "Trying to connect first...");
+    
+    if((!audioManager.isConnected() && audioManager.isAttemptingToConnect())) {
+      sendMessage(e, "Not connected!");
       return;
     }
     
-    scheduler.stop();
-    sendMessage(e, "Player has stopped.");
+    if(player.isPaused()) {
+      sendMessage(e, "Player is already paused!");
+      return;
+    }
+    if(scheduler.getQueue().isEmpty() && player.getPlayingTrack() == null) {
+      sendMessage(e, "Queue is empty. Try adding something first!");
+      return;
+    }
+    player.setPaused(true);
+    sendMessage(e, "Pausing...");
   }
 
   @Override
   public List<String> getCommandAliases() {
-    return Arrays.asList("stop");
+    return Arrays.asList("pause");
   }
 
 }

@@ -38,22 +38,24 @@ public class PlayCommand extends Command{
     if (!e.isFromType(ChannelType.TEXT))
       return;
     if(command.length == 1) {
-      if (player.isPaused()) {
-          player.setPaused(false);
-          sendMessage(e, "Resuming playback.");
-      }
-      else if (player.getPlayingTrack() != null) {
+      
+      if (player.getPlayingTrack() != null && !player.isPaused()) {
           sendMessage(e, "Already playing.");
+          return;
       }
-      else if (scheduler.getQueue().isEmpty()) {
+      if (scheduler.getQueue().isEmpty() && player.getPlayingTrack() == null) {
           sendMessage(e, "Queue is empty. Try adding something first!");
           this.commandHelp(e);
+          return;
       }
+      player.setPaused(false);
+      sendMessage(e, "Resuming playback.");
     }
     
     if(command.length >= 2) {
       connect(e, manager);
-      play(manager, e.getChannel(), getArguments(e.getMessage())[1], false);   
+      player.setPaused(false);
+      play(manager, e.getChannel(), getArguments(e.getMessage())[1], false);  
     } 
   }
 

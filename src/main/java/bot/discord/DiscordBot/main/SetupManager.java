@@ -21,7 +21,7 @@ public class SetupManager {
   private Setup setup;
   
   private final Path configFile = new File(".").toPath().resolve("Config.json");
-  private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+  private final Gson gson = new GsonBuilder().setPrettyPrinting().excludeFieldsWithoutExposeAnnotation().create();
   
   public static SetupManager getInstance() {
     if(singleton == null) {
@@ -34,9 +34,11 @@ public class SetupManager {
     setup = new Setup();
     setup.setBotToken("");
     setup.setRedditToken("");
-    setup.setCommand(new ArrayList<Command>());
     setup.setTrusted(new ArrayList<String>());
     loadSettings();
+    //gson sets field to null for some reason, set ArrayList after to avoid NullPointerException
+    setup.setCommand(new ArrayList<Command>());
+    //why does it not update
   }
 
    public Setup getSetup() {

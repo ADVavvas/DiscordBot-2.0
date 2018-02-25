@@ -20,6 +20,7 @@ public class TrackScheduler extends AudioEventAdapter {
   }
   
   public void queue(AudioTrack track) {
+    player.setPaused(false);
     if (!player.startTrack(track, true)) {
       queue.offer(track);
     }

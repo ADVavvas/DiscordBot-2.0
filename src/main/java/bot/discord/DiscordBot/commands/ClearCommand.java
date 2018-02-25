@@ -7,10 +7,13 @@ import bot.discord.DiscordBot.main.Setup;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.requests.RequestFuture;
 
 public class ClearCommand extends Command {
 
+  private static boolean isDeleted;
   @Override
   public void exeCommand(MessageReceivedEvent e) {
     Member member = e.getMember();
@@ -21,14 +24,18 @@ public class ClearCommand extends Command {
       sendMessage(e, mb.build());
       return;
     }
-    mb.append("Clearing...");
+   
+    mb.append("Clearing " + "messages...");
     sendMessage(e, mb.build());
-    if(e.getTextChannel().getIterableHistory().complete().size() >= 2) {
-      e.getTextChannel().deleteMessages(e.getTextChannel().getIterableHistory().limit(100).complete()).complete();
-    } else {
-      e.getTextChannel().deleteMessageById(e.getTextChannel().getLatestMessageId()).complete();
-    }
     
+    
+    
+    List<Message> msgs = e.getTextChannel().getHistory().retrievePast(100).complete();
+    while(msgs.size() >= 2) {
+      //RequestFuture<Void> rf = e.getTextChannel().deleteMessages(msgs).submit();
+      e.getTextChannel().deleteMessages(msgs).complete();
+      msgs = e.getTextChannel().getHistory().retrievePast(100).complete();
+    } 
   }
 
   @Override

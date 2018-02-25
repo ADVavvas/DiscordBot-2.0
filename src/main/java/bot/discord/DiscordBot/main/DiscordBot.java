@@ -50,8 +50,13 @@ public class DiscordBot {
       setup.addCommand(new PlayCommand());
       jdaBuilder.addEventListener(new StopCommand());
       setup.addCommand(new StopCommand());
+      jdaBuilder.addEventListener(new SkipCommand());
+      setup.addCommand(new SkipCommand());
+      jdaBuilder.addEventListener(new PauseCommand());
+      setup.addCommand(new PauseCommand());
+      jdaBuilder.addEventListener(new JoinCommand());
+      setup.addCommand(new JoinCommand());
       
-    
       jda = jdaBuilder.buildBlocking();
       System.out.println("all done");
     } catch (LoginException e) {
