@@ -1,2 +1,2 @@
 # DiscordBot-2.0
-DiscordBot v2
+A general purpose bot for the VoIP application, Discord
